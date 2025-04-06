@@ -152,6 +152,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-⭐ Star this repo if you find it useful! Join our [Discord community](https://discord.gg/sirajraval) to discuss improvements and share results.
+⭐ Star this repo if you find it useful! Join our [Discord community](https://discord.gg/GpAF7QAG) to discuss improvements and share results.
 
 **Note:** This system is for educational purposes. Always do your own research before trading. 

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PollyPicks - Top 5 Profitable Markets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5a67d8;
+            --secondary-color: #4c51bf;
+            --accent-color: #f05252;
+            --background-color: #f7fafc;
+            --card-color: #ffffff;
+            --text-color: #1a202c;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        .date-display {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .markets-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .market-card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .market-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .market-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .market-icon {
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(90, 103, 216, 0.1);
+            border-radius: 8px;
+        }
+        
+        .market-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .market-body {
+            padding: 1.25rem;
+        }
+        
+        .market-description {
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .market-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .market-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .recommendation {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background-color: rgba(72, 187, 120, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .recommendation-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .recommendation-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: var(--success-color);
+        }
+        
+        .summary-card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .summary-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .summary-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media (min-width: 768px) {
+            .markets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>PollyPicks: Top Profitable Markets</h1>
+            <div class="date-display">For {{ tomorrow_display }}</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="markets-grid">
+            {% for market in markets %}
+            <div class="market-card">
+                <div class="market-header">
+                    <div class="market-icon">{{ market.icon }}</div>
+                    <h2 class="market-title">{{ market.name }}</h2>
+                </div>
+                <div class="market-body">
+                    <p class="market-description">{{ market.description }}</p>
+                    <div class="market-details">
+                        <div class="market-detail">
+                            <span class="detail-label">YES Odds</span>
+                            <span class="detail-value">{{ market.yes_odds }}</span>
+                        </div>
+                        <div class="market-detail">
+                            <span class="detail-label">NO Odds</span>
+                            <span class="detail-value">{{ market.no_odds }}</span>
+                        </div>
+                        <div class="market-detail">
+                            <span class="detail-label">Bet Amount</span>
+                            <span class="detail-value">{{ market.bet_amount }}</span>
+                        </div>
+                        <div class="market-detail">
+                            <span class="detail-label">Expected Profit</span>
+                            <span class="detail-value">{{ market.expected_profit }}</span>
+                        </div>
+                    </div>
+                    <div class="recommendation">
+                        <span class="recommendation-label">Our Recommendation</span>
+                        <span class="recommendation-value">{{ market.recommendation }} ({{ market.confidence }})</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-header">Strategy Summary</div>
+            <div class="summary-details">
+                <div class="summary-item">
+                    <div class="summary-value">${{ total_bet_amount|round(2) }}</div>
+                    <div class="summary-label">Total Investment</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">${{ total_expected_profit|round(2) }}</div>
+                    <div class="summary-label">Expected Profit</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">{{ roi_percentage|round(2) }}%</div>
+                    <div class="summary-label">Expected ROI</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© {{ current_year }} PollyPicks • AI-Powered Prediction Market Analysis</p>
+            <p>Data based on Polymarket.com • Not financial advice</p>
+        </footer>
+    </div>
+
+    <script>
+        // JavaScript to refresh data every 60 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html> 

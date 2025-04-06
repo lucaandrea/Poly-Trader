@@ -1,15 +1,42 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, flash, redirect, url_for
 import openai
 from datetime import datetime, timedelta
 import os
+from dotenv import load_dotenv
+import logging
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
+
+# Check for required environment variables
+required_env_vars = ["OPENAI_API_KEY", "FLASK_SECRET_KEY"]
+missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+
+if missing_vars:
+    logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
+    logger.error("Please set these variables in your .env file or environment.")
+    logger.error("You can copy .env.example to .env and fill in your API keys.")
+
+# Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY", "default-dev-key")
 
 # Initialize OpenAI client
 openai_api_key = os.getenv("OPENAI_API_KEY")
-client = openai.OpenAI(api_key=openai_api_key)
+try:
+    client = openai.OpenAI(api_key=openai_api_key)
+    logger.info("OpenAI client initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing OpenAI client: {str(e)}")
+    client = None
 
 # Function to get market data using OpenAI's search capabilities
 def get_market_data():
@@ -111,11 +138,30 @@ def api_markets():
     data = get_market_data()
     return jsonify(data)
 
+@app.route('/setup')
+def setup():
+    """Page to guide users through setup process"""
+    # Check if required variables are set
+    missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+    return render_template('setup.html', missing_vars=missing_vars)
+
+@app.route('/troubleshooting')
+def troubleshooting():
+    """Page with troubleshooting information"""
+    return render_template('troubleshooting.html', current_year=datetime.now().year)
+
 # Create templates directory if it doesn't exist
 if not os.path.exists('templates'):
     os.makedirs('templates')
+    logger.info("Created templates directory")
 
 if __name__ == '__main__':
+    if missing_vars:
+        print("WARNING: Missing required environment variables!")
+        print(f"Missing: {', '.join(missing_vars)}")
+        print("Please set these variables in your .env file or environment.")
+        print("\nStarting the app anyway, but some features may not work properly.")
+    
     print("Starting PollyPicks Flask app...")
-    print("Visit http://127.0.0.1:5000 in your browser")
-    app.run(debug=True) 
+    print("Visit http://127.0.0.1:5001 in your browser")
+    app.run(debug=True, port=5001) 

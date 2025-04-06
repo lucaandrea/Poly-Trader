@@ -49,6 +49,31 @@
             align-items: center;
         }
         
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+        
+        .nav-link:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        
         h1 {
             margin: 0;
             font-size: 1.75rem;
@@ -227,7 +252,13 @@
     <header>
         <div class="header-content">
             <h1>PollyPicks: Top Profitable Markets</h1>
-            <div class="date-display">For {{ tomorrow_display }}</div>
+            <div class="header-right">
+                <div class="nav-links">
+                    <a href="/setup" class="nav-link">Setup Guide</a>
+                    <a href="/troubleshooting" class="nav-link">Troubleshooting</a>
+                </div>
+                <div class="date-display">For {{ tomorrow_display }}</div>
+            </div>
         </div>
     </header>
     

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PollyPicks - Troubleshooting Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5a67d8;
+            --secondary-color: #4c51bf;
+            --accent-color: #f05252;
+            --background-color: #f7fafc;
+            --card-color: #ffffff;
+            --text-color: #1a202c;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --warning-color: #f6ad55;
+            --error-color: #e53e3e;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .code-block {
+            background-color: #2d3748;
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .issue {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+        
+        .issue:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .issue-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--error-color);
+            margin-bottom: 0.75rem;
+        }
+        
+        .solution-title {
+            font-weight: 600;
+            color: var(--success-color);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>PollyPicks: Troubleshooting Guide</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Common Issues and Solutions</h2>
+            
+            <div class="issue">
+                <div class="issue-title">Missing API Keys or Environment Variables</div>
+                <p>If you see errors related to missing API keys or environment variables:</p>
+                
+                <div class="solution-title">Solution:</div>
+                <ol>
+                    <li>Make sure you've created a <code>.env</code> file in the root directory</li>
+                    <li>Check that all required variables are set in your <code>.env</code> file</li>
+                    <li>Verify there are no typos in your API keys</li>
+                    <li>If using Windows, try restarting your terminal after creating the <code>.env</code> file</li>
+                </ol>
+                
+                <div class="code-block">
+# Required environment variables
+OPENAI_API_KEY=your_openai_api_key_here
+FLASK_SECRET_KEY=your_flask_secret_key_here
+SERPAPI_API_KEY=your_serpapi_api_key_here
+                </div>
+            </div>
+            
+            <div class="issue">
+                <div class="issue-title">Port 5000/5001 Already in Use</div>
+                <p>If you see an error message like "Address already in use" when starting the application:</p>
+                
+                <div class="solution-title">Solution:</div>
+                <ol>
+                    <li>On macOS, the AirPlay service often uses port 5000. Try disabling it in System Preferences</li>
+                    <li>Check if you have another instance of the app running</li>
+                    <li>Change the port number in <code>app.py</code>:</li>
+                </ol>
+                
+                <div class="code-block">
+# In app.py, change the port number
+app.run(debug=True, port=5002)  # Try a different port number
+                </div>
+            </div>
+            
+            <div class="issue">
+                <div class="issue-title">Missing Dependencies</div>
+                <p>If you encounter "ModuleNotFoundError" or similar import errors:</p>
+                
+                <div class="solution-title">Solution:</div>
+                <ol>
+                    <li>Make sure you've activated your virtual environment:</li>
+                    <div class="code-block">
+# On Windows
+venv\Scripts\activate
+
+# On macOS/Linux
+source venv/bin/activate
+                    </div>
+                    <li>Reinstall all dependencies:</li>
+                    <div class="code-block">pip install -r requirements.txt</div>
+                    <li>If you're still having issues, try creating a fresh virtual environment:</li>
+                    <div class="code-block">
+python -m venv venv_new
+source venv_new/bin/activate  # or venv_new\Scripts\activate on Windows
+pip install -r requirements.txt
+                    </div>
+                </ol>
+            </div>
+            
+            <div class="issue">
+                <div class="issue-title">Wallet or Blockchain Errors</div>
+                <p>If you encounter errors related to blockchain transactions or wallet operations:</p>
+                
+                <div class="solution-title">Solution:</div>
+                <ul>
+                    <li>Ensure your private key is correct and properly formatted (should start with 0x)</li>
+                    <li>Check that you have enough MATIC in your wallet for gas fees</li>
+                    <li>Verify your wallet has sufficient USDC for trading</li>
+                    <li>Try using a different RPC URL if you encounter connectivity issues:</li>
+                    <div class="code-block">
+# You can modify these lines in place_polymarket_bet.py
+RPC_URL = "https://polygon-rpc.com"  # Try alternative: "https://rpc-mainnet.maticvigil.com"
+                    </div>
+                </ul>
+            </div>
+            
+            <div class="issue">
+                <div class="issue-title">OpenAI API Rate Limits</div>
+                <p>If you encounter rate limiting errors from the OpenAI API:</p>
+                
+                <div class="solution-title">Solution:</div>
+                <ul>
+                    <li>Check your OpenAI account usage limits</li>
+                    <li>Implement a delay between API calls (already implemented in most functions)</li>
+                    <li>Consider upgrading your OpenAI API plan if you're running the system frequently</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/">&larr; Back to Dashboard</a>
+            <a href="/setup">Setup Guide &rarr;</a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; {{ current_year if current_year else "2024" }} PollyPicks. All rights reserved.</p>
+    </footer>
+</body>
+</html> 

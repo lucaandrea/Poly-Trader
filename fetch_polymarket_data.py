@@ -3,13 +3,23 @@ import json
 from serpapi import GoogleSearch
 import time
 import random
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def fetch_polymarket_data():
     """
     Fetch real Polymarket data using SerpAPI
     """
-    # Initialize with SerpAPI key
-    serp_api_key = "rGAJJcXVffwoksdAsP2rLBfR"
+    # Initialize with SerpAPI key from environment variables
+    serp_api_key = os.getenv("SERPAPI_API_KEY")
+    
+    # Check if API key is available
+    if not serp_api_key:
+        print("Warning: SERPAPI_API_KEY not found in environment variables. Using fallback data.")
+        return fetch_fallback_data()
     
     # We'll search for current active markets on Polymarket
     params = {

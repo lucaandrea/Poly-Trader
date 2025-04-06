@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PollyPicks - Setup Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5a67d8;
+            --secondary-color: #4c51bf;
+            --accent-color: #f05252;
+            --background-color: #f7fafc;
+            --card-color: #ffffff;
+            --text-color: #1a202c;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --warning-color: #f6ad55;
+            --error-color: #e53e3e;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-icon {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+        
+        .alert-warning {
+            background-color: rgba(246, 173, 85, 0.1);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+        
+        .alert-success {
+            background-color: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+        
+        .code-block {
+            background-color: #2d3748;
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .step {
+            margin-bottom: 2rem;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 9999px;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+        
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>PollyPicks: Setup Guide</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        {% if missing_vars %}
+        <div class="alert alert-error">
+            <div class="alert-icon">⚠️</div>
+            <div>
+                <p>Missing required environment variables: {{ missing_vars|join(', ') }}</p>
+                <p>Please follow the setup guide below to configure these variables.</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-success">
+            <div class="alert-icon">✅</div>
+            <div>
+                <p>All required environment variables are set. Your setup is complete!</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <h2>Setting Up PollyPicks</h2>
+            <p>Welcome to PollyPicks, an AI-powered trading system for Polymarket. Follow the steps below to get started.</p>
+            
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    Configure Environment Variables
+                </div>
+                <p>Create a <code>.env</code> file in the root directory by copying the <code>.env.example</code> file:</p>
+                <div class="code-block">cp .env.example .env</div>
+                <p>Then edit the <code>.env</code> file with your API keys and configuration:</p>
+                <div class="code-block">
+# OpenAI API key (required for AI functionality)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Flask app settings
+FLASK_SECRET_KEY=your_flask_secret_key_here
+
+# SerpAPI key (required for market data)
+SERPAPI_API_KEY=your_serpapi_api_key_here
+
+# Polymarket API credentials
+POLYMARKET_API_KEY=your_polymarket_api_key_here
+
+# Wallet information (required for transactions)
+POLYGON_WALLET_PRIVATE_KEY=your_private_key_here
+POLYMARKET_WALLET_ADDRESS=your_wallet_address_here
+
+# Trading settings
+INITIAL_BANKROLL=1000
+MAX_BET_PERCENTAGE=0.05
+MIN_EDGE_PERCENTAGE=0.15
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    Obtain Required API Keys
+                </div>
+                <h3>OpenAI API Key</h3>
+                <ul>
+                    <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank">https://platform.openai.com/api-keys</a></li>
+                    <li>Sign up or log in to your OpenAI account</li>
+                    <li>Create a new API key and copy it to your <code>.env</code> file</li>
+                </ul>
+                
+                <h3>SerpAPI Key</h3>
+                <ul>
+                    <li>Visit <a href="https://serpapi.com/" target="_blank">https://serpapi.com/</a></li>
+                    <li>Sign up for an account and obtain your API key</li>
+                    <li>Copy the API key to your <code>.env</code> file</li>
+                </ul>
+                
+                <h3>Polymarket Wallet Setup</h3>
+                <ul>
+                    <li>Create a Polygon network wallet using MetaMask or another wallet provider</li>
+                    <li>Export your private key (keep this secure!)</li>
+                    <li>Add your wallet address and private key to the <code>.env</code> file</li>
+                    <li>Fund your wallet with MATIC (for gas fees) and USDC (for trading)</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    Run the Application
+                </div>
+                <p>Start the Flask application:</p>
+                <div class="code-block">python app.py</div>
+                <p>Visit <a href="http://127.0.0.1:5000" target="_blank">http://127.0.0.1:5000</a> in your browser to access the application.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Additional Resources</h2>
+            <ul>
+                <li><a href="https://docs.polymarket.com/" target="_blank">Polymarket Documentation</a></li>
+                <li><a href="https://platform.openai.com/docs/introduction" target="_blank">OpenAI API Documentation</a></li>
+                <li><a href="https://web3py.readthedocs.io/" target="_blank">Web3.py Documentation</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; {{ current_year if current_year else "2024" }} PollyPicks. All rights reserved.</p>
+    </footer>
+</body>
+</html> 

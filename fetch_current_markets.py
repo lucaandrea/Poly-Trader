@@ -80,7 +80,8 @@ def fetch_current_markets():
         # Print the newest end date
         if newest_end_date:
             print(f"Newest market end date: {newest_end_date.strftime('%Y-%m-%d %H:%M')}")
-            today = datetime.datetime.now()
+            # Make today timezone-aware to match newest_end_date
+            today = datetime.datetime.now(datetime.timezone.utc)
             days_diff = (newest_end_date - today).days
             print(f"Days from now: {days_diff}")
             

@@ -1,6 +1,7 @@
 flask==2.3.3
-openai==1.68.0
+openai==1.82.0
 python-dotenv==1.0.0
-serpapi==0.1.5
+exa-py==1.0.9
+firecrawl-py==2.7.1
 web3==7.10.0
 requests==2.32.3 

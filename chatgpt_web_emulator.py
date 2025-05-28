@@ -1,87 +1,147 @@
 #!/usr/bin/env python3
 import openai
 from datetime import datetime, timedelta
-import time
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Initialize OpenAI client
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Get tomorrow's date
-tomorrow = (datetime.now() + timedelta(days=1)).strftime('%B %d, %Y')  # Format: March 25, 2025
-
-# Create a new assistant with web browsing capabilities
-try:
-    print("Creating a new assistant with web browsing capabilities...")
-    assistant = client.beta.assistants.create(
-        name="Polymarket Researcher",
-        instructions=f"You are an expert at finding information about Polymarket prediction markets. Today is {datetime.now().strftime('%B %d, %Y')}. Your task is to search for and provide the most up-to-date information about Polymarket markets that are ending tomorrow ({tomorrow}). Focus especially on markets related to Bitcoin, Ethereum, temperature records, and company market capitalizations.",
-        model="gpt-4-turbo",
-        tools=[{"type": "web_search"}]
-    )
-    print(f"Assistant created with ID: {assistant.id}")
-except Exception as e:
-    print(f"Error creating assistant: {e}")
-    exit(1)
-
-try:
-    # Create a thread for conversation
-    thread = client.beta.threads.create()
-
-    # First message - asking about Polymarket markets ending tomorrow
-    message1 = client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=f"what are the active markets on polymarket that are ending tomorrow?"
-    )
-
-    # Run the assistant
-    print("Running the assistant to search for Polymarket markets...")
-    run1 = client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant.id
-    )
-
-    # Wait for the run to complete
-    print("Processing request...")
-    while run1.status not in ["completed", "failed"]:
-        time.sleep(2)
-        run1 = client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=run1.id
-        )
-        print(f"Status: {run1.status}")
-        
-    if run1.status == "failed":
-        print(f"Run failed: {run1.last_error}")
-        exit(1)
-
-    # Get the messages
-    messages = client.beta.threads.messages.list(
-        thread_id=thread.id
-    )
-
-    # Print the response
-    print(f"\nCHATGPT WEB EMULATOR - POLYMARKET MARKETS ENDING TOMORROW ({tomorrow})")
-    print("=" * 80)
-
-    # Get the latest assistant message
-    for message in messages.data:
-        if message.role == "assistant":
-            for content_part in message.content:
-                if content_part.type == "text":
-                    print(content_part.text.value)
-                    break
-            break
-
-    # Clean up
-    print("\nCleaning up resources...")
-    client.beta.assistants.delete(assistant.id)
-    
-except Exception as e:
-    print(f"Error: {e}")
-    # Try to clean up even if there was an error
+def search_polymarket_markets_ending_tomorrow():
+    """
+    Search for Polymarket markets ending tomorrow using GPT-4.1 with web search
+    """
     try:
-        client.beta.assistants.delete(assistant.id)
-    except:
-        pass 
+        # Get tomorrow's date in a readable format
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%B %d, %Y')
+        today = datetime.now().strftime('%B %d, %Y')
+        
+        print(f"🔍 Searching for Polymarket markets ending tomorrow ({tomorrow})...")
+        print("Using GPT-4.1 with web search capabilities")
+        print("=" * 80)
+        
+        # Create a response with web search enabled
+        response = client.responses.create(
+            model="gpt-4.1",
+            tools=[{
+                "type": "web_search_preview",
+                "search_context_size": "high",  # High context for detailed search
+                "user_location": {
+                    "type": "approximate",
+                    "country": "US",
+                    "timezone": "America/New_York"
+                }
+            }],
+            input=f"""Today is {today}. Search for active prediction markets on Polymarket.com that are specifically ending tomorrow ({tomorrow}).
+
+            Focus on finding:
+            1. Bitcoin/cryptocurrency price predictions ending tomorrow
+            2. Ethereum or other crypto markets ending tomorrow  
+            3. Temperature records or weather-related markets ending tomorrow
+            4. Company market capitalization bets ending tomorrow
+            5. Political or election markets ending tomorrow
+            6. Sports or entertainment markets ending tomorrow
+            
+            For each market found, provide:
+            - Exact market question/title
+            - Current odds/probabilities 
+            - End date/time (confirm it's tomorrow)
+            - Current market volume if available
+            - Direct link to the market
+            - Brief analysis of why this market is interesting
+            
+            Please search thoroughly on Polymarket.com and provide the most current information available."""
+        )
+        
+        # Display the results
+        print(f"\n🎯 POLYMARKET MARKETS ENDING TOMORROW ({tomorrow})")
+        print("Generated using GPT-4.1 Web Search")
+        print("=" * 80)
+        
+        # Process the response output
+        for item in response.output:
+            if item.type == "web_search_call":
+                print(f"🔍 Web search executed (ID: {item.id})")
+                print(f"📊 Search status: {item.status}")
+                print()
+            elif item.type == "message":
+                # Extract the main content
+                for content in item.content:
+                    if content.type == "output_text":
+                        print(content.text)
+                        
+                        # Display citations if available
+                        if hasattr(content, 'annotations') and content.annotations:
+                            print("\n" + "=" * 80)
+                            print("📚 SOURCES AND REFERENCES:")
+                            print("=" * 80)
+                            for i, annotation in enumerate(content.annotations, 1):
+                                if annotation.type == "url_citation":
+                                    print(f"{i}. {annotation.title}")
+                                    print(f"   🔗 {annotation.url}")
+                                    print()
+        
+        print("\n" + "=" * 80)
+        print("✅ Search completed successfully using GPT-4.1!")
+        print("💡 Tip: Run this script daily to find tomorrow's expiring markets")
+        print("=" * 80)
+        
+    except Exception as e:
+        print(f"❌ Error during web search: {str(e)}")
+        print("\nTroubleshooting:")
+        print("1. Verify your OPENAI_API_KEY is set correctly in .env")
+        print("2. Ensure you have access to GPT-4.1 and web search")
+        print("3. Check your OpenAI usage limits and billing")
+        print("4. Verify internet connection for web search")
+
+def search_specific_polymarket_category(category):
+    """
+    Search for a specific category of Polymarket markets ending tomorrow
+    """
+    try:
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%B %d, %Y')
+        
+        print(f"🎯 Searching for {category} markets ending tomorrow ({tomorrow})...")
+        
+        response = client.responses.create(
+            model="gpt-4.1",
+            tools=[{
+                "type": "web_search_preview",
+                "search_context_size": "high"
+            }],
+            input=f"""Search Polymarket.com specifically for {category} prediction markets that end tomorrow ({tomorrow}).
+            
+            Provide detailed information including:
+            - Current odds and probabilities
+            - Market volume and activity
+            - Recent price movements
+            - Key factors affecting the market
+            - Analysis of potential outcomes"""
+        )
+        
+        print(f"\n📊 {category.upper()} MARKETS ENDING TOMORROW")
+        print("=" * 60)
+        
+        for item in response.output:
+            if item.type == "message":
+                for content in item.content:
+                    if content.type == "output_text":
+                        print(content.text)
+        
+    except Exception as e:
+        print(f"❌ Error searching for {category} markets: {str(e)}")
+
+if __name__ == "__main__":
+    # Check for command line arguments for specific categories
+    import sys
+    
+    if len(sys.argv) > 1:
+        # Search for specific category
+        category = " ".join(sys.argv[1:])
+        search_specific_polymarket_category(category)
+    else:
+        # General search for all markets ending tomorrow
+        search_polymarket_markets_ending_tomorrow()

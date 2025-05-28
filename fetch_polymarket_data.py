@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
-from serpapi import GoogleSearch
+from exa_py import Exa
+from firecrawl import FirecrawlApp
 import time
 import random
 import os
@@ -11,55 +12,85 @@ load_dotenv()
 
 def fetch_polymarket_data():
     """
-    Fetch real Polymarket data using SerpAPI
+    Fetch real Polymarket data using Exa Search API and Firecrawl for content enhancement.
+    
+    Uses Exa's neural search to find active prediction markets on Polymarket,
+    then optionally uses Firecrawl to get enhanced content from individual pages.
+    
+    Returns:
+        dict: Contains markets list, total bet amounts, expected profits, and ROI
     """
-    # Initialize with SerpAPI key from environment variables
-    serp_api_key = os.getenv("SERPAPI_API_KEY")
+    # Initialize with Exa key from environment variables
+    exa_api_key = os.getenv("EXA_API_KEY")
+    firecrawl_api_key = os.getenv("FIRECRAWL_API_KEY")
     
     # Check if API key is available
-    if not serp_api_key:
-        print("Warning: SERPAPI_API_KEY not found in environment variables. Using fallback data.")
+    if not exa_api_key:
+        print("Warning: EXA_API_KEY not found in environment variables. Using fallback data.")
         return fetch_fallback_data()
     
-    # We'll search for current active markets on Polymarket
-    params = {
-        "api_key": serp_api_key,
-        "engine": "google",
-        "q": "polymarket active markets site:polymarket.com",
-        "num": 15,  # Get more results to filter
-        "tbm": "nws"  # News search to get recent information
-    }
-    
     try:
-        # Perform the search
-        search = GoogleSearch(params)
-        results = search.get_dict()
+        # Initialize Exa client
+        exa = Exa(api_key=exa_api_key)
         
-        # Extract organic results
-        if "organic_results" in results:
-            organic_results = results["organic_results"]
-        else:
-            # Fallback to news_results if available
-            organic_results = results.get("news_results", [])
+        # Search for current active markets on Polymarket
+        search_results = exa.search_and_contents(
+            query="active prediction markets betting polymarket.com",
+            type="neural",  # Use neural search for better semantic matching
+            num_results=15,
+            include_domains=["polymarket.com"],
+            start_published_date="2025-05-01",  # Only recent content
+            text=True  # Include text content
+        )
         
         # Process the results to get market data
         markets = []
         
-        for result in organic_results:
-            # Skip if no link
-            if "link" not in result:
+        for result in search_results.results:
+            # Skip if no URL
+            if not hasattr(result, 'url') or not result.url:
                 continue
                 
-            link = result["link"]
-            title = result.get("title", "")
-            snippet = result.get("snippet", "")
+            url = result.url
+            title = getattr(result, 'title', '')
+            text_content = getattr(result, 'text', '')
             
             # Skip non-event pages
-            if "/event/" not in link:
+            if "/event/" not in url:
                 continue
                 
             # Extract market question and create structured data
             question = title.replace(" | Polymarket", "").strip()
+            
+            # Use Firecrawl to get better content if available
+            description = ""
+            if firecrawl_api_key and len(text_content) < 100:
+                try:
+                    firecrawl = FirecrawlApp(api_key=firecrawl_api_key)
+                    scrape_result = firecrawl.scrape_url(url, params={
+                        'formats': ['markdown'],
+                        'onlyMainContent': True
+                    })
+                    if scrape_result and 'content' in scrape_result:
+                        # Extract first meaningful paragraph as description
+                        content_lines = scrape_result['content'].split('\n')
+                        for line in content_lines:
+                            if len(line.strip()) > 50 and not line.startswith('#'):
+                                description = line.strip()[:200] + "..."
+                                break
+                except Exception as e:
+                    print(f"Firecrawl error for {url}: {e}")
+            
+            # Fallback to Exa text content for description
+            if not description and text_content:
+                # Clean up and truncate the description
+                description = text_content.strip()
+                if len(description) > 200:
+                    description = description[:197] + "..."
+            
+            # Default description if nothing else works
+            if not description:
+                description = f"Prediction market about: {question}"
             
             # Generate realistic probabilities
             yes_odds = random.randint(15, 85)
@@ -115,8 +146,8 @@ def fetch_polymarket_data():
             # Create market data structure
             market = {
                 "name": question,
-                "url": link,
-                "description": snippet,
+                "url": url,
+                "description": description,
                 "yes_odds": f"{yes_odds}%",
                 "no_odds": f"{no_odds}%",
                 "recommendation": recommendation,
@@ -214,7 +245,8 @@ def fetch_polymarket_data():
         }
         
     except Exception as e:
-        print(f"Error fetching Polymarket data: {e}")
+        print(f"Error fetching Polymarket data with Exa Search: {e}")
+        print("Falling back to static data...")
         # Return fallback data
         return fetch_fallback_data()
 

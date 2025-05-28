@@ -16,16 +16,14 @@ print("Searching for real Polymarket markets ending soon...")
 query = f"What are the active markets on Polymarket.com that are ending this month? Focus on cryptocurrency markets, temperature records, and company market capitalization markets."
 
 # Make the search request
-search_response = client.chat.completions.create(
-    model="gpt-4o-search-preview",
-    messages=[
-        {"role": "user", "content": query}
-    ],
-    web_search_options={}
+search_response = client.responses.create(
+    model="gpt-4.1",
+    input=query,
+    tools=[{"type": "web_search_preview"}]
 )
 
 # Get the real market data from the search
-real_markets_data = search_response.choices[0].message.content
+real_markets_data = search_response.output
 
 print("\nNow generating combined output...\n")
 

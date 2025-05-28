@@ -2,7 +2,10 @@
 import openai
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
 # Set OpenAI API key
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -19,12 +22,12 @@ provide the most recent markets you're aware of and clearly note that the inform
 be outdated."""
 
 # Get response from OpenAI API
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[{"role": "user", "content": prompt}]
+response = client.responses.create(
+    model="gpt-4.1",
+    input=prompt
 )
 
 # Print results
 print(f"POLYMARKET ACTIVE MARKETS ({datetime.now().strftime('%Y-%m-%d')})")
 print("=" * 70)
-print(response.choices[0].message.content) 
+print(response.output) 

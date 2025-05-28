@@ -43,7 +43,7 @@ def approve_usdc_spending():
     print(f"Connected to Polygon network. Chain ID: {w3.eth.chain_id}")
     
     # Define contract addresses
-    usdc_contract = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"  # USDC on Polygon
+    usdc_contract_address = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"  # Native USDC on Polygon (updated)
     polymarket_exchange = "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E"  # Polymarket Exchange
     
     # Check USDC balance first
@@ -86,7 +86,7 @@ def approve_usdc_spending():
         ]''')
         
         # Create contract instance
-        usdc_contract = w3.eth.contract(address=usdc_contract, abi=usdc_abi)
+        usdc_contract = w3.eth.contract(address=usdc_contract_address, abi=usdc_abi)
         
         # Check USDC balance
         balance = usdc_contract.functions.balanceOf(wallet_address).call()
@@ -137,7 +137,7 @@ def approve_usdc_spending():
         
         # Sign and send transaction
         signed_txn = w3.eth.account.sign_transaction(approve_txn, private_key)
-        tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
         
         print(f"Approval transaction sent! Transaction hash: {tx_hash.hex()}")
         print(f"View on PolygonScan: https://polygonscan.com/tx/{tx_hash.hex()}")

@@ -7,14 +7,14 @@ from typing import Dict, Any, Optional, List, Tuple
 from dotenv import load_dotenv
 from web3 import Web3
 from eth_account import Account
-from nba_markets import get_active_sports_markets, parse_token_ids, parse_outcomes, classify_market
+from nba_markets import get_active_sports_markets, get_sports_markets_simplified, parse_token_ids, parse_outcomes, classify_market
 
 # Load environment variables
 load_dotenv()
 
 # Constants
 POLYMARKET_EXCHANGE = "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E"  # Polymarket Exchange contract
-USDC_CONTRACT = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"  # USDC on Polygon
+USDC_CONTRACT = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"  # Native USDC on Polygon (updated)
 RPC_URL = "https://polygon-rpc.com"
 CLOB_API_URL = "https://clob.polymarket.com"
 
@@ -204,7 +204,7 @@ def place_market_order(
             
             # Sign and send transaction
             signed_tx = w3.eth.account.sign_transaction(tx, private_key)
-            tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+            tx_hash = w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             
             print(f"Settlement transaction sent! Hash: {tx_hash.hex()}")
             print(f"View on PolygonScan: https://polygonscan.com/tx/{tx_hash.hex()}")
@@ -337,10 +337,46 @@ def main() -> None:
         
         # Step 3: Get active sports markets
         print("\nFetching sports markets...")
-        sports_markets = get_active_sports_markets()
+        
+        # First try the simplified approach (doesn't require order books)
+        sports_markets = get_sports_markets_simplified()
+        
+        if sports_markets:
+            print(f"Found {len(sports_markets)} sports markets using simplified method")
+            
+            # Display the markets for user selection
+            print("\nAvailable sports markets:")
+            for i, market in enumerate(sports_markets[:10]):  # Show first 10
+                question = market.get('question', 'Unknown Market')
+                category = classify_market(question)
+                token_ids = parse_token_ids(market)
+                
+                print(f"{i+1}. [{category}] {question}")
+                print(f"   Token IDs: {len(token_ids)} outcomes")
+                
+                # Try to get basic market info without requiring order books
+                end_date = market.get('endDate', 'Unknown')
+                if end_date != 'Unknown':
+                    try:
+                        import datetime
+                        date_obj = datetime.datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+                        end_date_formatted = date_obj.strftime("%Y-%m-%d %H:%M")
+                        print(f"   Ends: {end_date_formatted}")
+                    except:
+                        print(f"   Ends: {end_date}")
+                
+                print()
+        else:
+            # Fallback to the original method if simplified doesn't work
+            print("Simplified method failed, trying full method with order book checking...")
+            sports_markets = get_active_sports_markets()
         
         if not sports_markets:
-            print("\nNo active sports markets found. Please try again later.")
+            print("\nNo active sports markets found. This could be due to:")
+            print("1. No current sports markets on Polymarket")
+            print("2. CLOB API access issues") 
+            print("3. All markets may be paused or have low liquidity")
+            print("\nPlease try again later or check Polymarket.com directly.")
             return
         
         # Step 4: Let user select market and outcome

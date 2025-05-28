@@ -13,7 +13,7 @@ markets. Format as a numbered list."""
 
 # Get response from OpenAI API
 response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-4.1",
     messages=[{"role": "user", "content": prompt}]
 )
 
